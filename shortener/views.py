@@ -3,6 +3,7 @@ from .forms import UrlForm
 from django.http import HttpResponseRedirect, HttpResponseNotFound
 from .models import Url
 from django.contrib import auth
+from django.db.models import F
 
 
 def index(request):
@@ -27,24 +28,20 @@ def index(request):
         return render(request, 'shortener/main_form.html', {'form': form})
 
 
-def handler(request):
-    """Handle requests, try to guess is this just redirect or info page. Check in db and return appropriate result."""
-    url = request.path_info[1:]
-    if url[0] == '!':
-        info_page = True
-        url_shortcut = url[1:]
-    else:
-        info_page = False
-        url_shortcut = url
-
-    if Url.objects.filter(shortcut=url_shortcut).exists():
+def redirect_link(request, url_shortcut):
+    """Redirect to the correct url."""
+    Url.objects.filter(shortcut=url_shortcut).update(counter=F('counter') + 1)
+    try:
         url = Url.objects.get(shortcut=url_shortcut)
-    else:
-        return HttpResponseNotFound('<h1>Page not found</h1>')
+    except Url.DoesNotExist:
+        return HttpResponseNotFound('<h1>Shortcut doesn\'t exist.</h1>')
+    return HttpResponseRedirect(url.url)
 
-    if info_page is True:
-        return render(request, 'shortener/info.html', {'url': url})
-    else:
-        url.counter += 1
-        url.save()
-        return HttpResponseRedirect(url.url)
+
+def info_page(request, url_shortcut):
+    """Show info page."""
+    try:
+        url = Url.objects.get(shortcut=url_shortcut)
+    except Url.DoesNotExist:
+        return HttpResponseNotFound('<h1>Page not found</h1>')
+    return render(request, 'shortener/info.html', {'url': url})
