@@ -1,0 +1,64 @@
+<!doctype html>
+<html class="no-js" lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ url.url }} info</title>
+    <link rel="stylesheet" href="{{ static("css/foundation.css") }}">
+    <link rel="stylesheet" href="{{ static("css/app.css") }}">
+</head>
+<body>
+<div class="row">
+    <div class="large-12 columns">
+        <h1>Details about shortcut</h1>
+        {% if in_use %}
+            <div class="callout secondary">
+                <p>Address is already shortened, details below.</p>
+            </div>
+        {% endif %}
+        <table>
+            <thead>
+            <tr>
+                <th width="200">Property</th>
+                <th>Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Address</td>
+                <td><a href="{{ url.url }}">{{ url.url }}</a></td>
+            </tr>
+            <tr>
+                <td>Info page</td>
+                <td><a href="/!{{ url.shortcut }}">{{ get_current_site(request).domain }}/!{{ url.shortcut }}</a></td>
+            </tr>
+            <tr>
+                <td>Shortcut</td>
+                <td><a href="/{{ url.shortcut }}">{{ get_current_site(request).domain }}/{{ url.shortcut }}</a></td>
+            </tr>
+            <tr>
+                <td>Added</td>
+                <td>{{ url.added }}</td>
+            </tr>
+            <tr>
+                <td>User</td>
+                <td><a href="mailto:{{ url.user.email }}">{{ url.user.username }}
+                    ({{ url.user.first_name }} {{ url.user.last_name }})</a>, user sience {{ url.user.date_joined }}
+                </td>
+            </tr>
+            <tr>
+                <td>Visits counter</td>
+                <td>{{ url.counter }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+    <script src="{{ static("js/vendor/jquery.js") }}"></script>
+    <script src="{{ static("js/vendor/what-input.js") }}"></script>
+    <script src="{{ static("js/vendor/foundation.js") }}"></script>
+    <script src="{{ static("js/app.js") }}"></script>
+</body>
+</html>

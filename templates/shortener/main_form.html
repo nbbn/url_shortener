@@ -1,0 +1,44 @@
+<!doctype html>
+<html class="no-js" lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shortener</title>
+    <link rel="stylesheet" href="{{ static("css/foundation.css") }}">
+    <link rel="stylesheet" href="{{ static("css/app.css") }}">
+</head>
+<body>
+<div class="row">
+    <div class="large-12 columns">
+        <h1>Make it short</h1>
+    </div>
+</div>
+<div class="row">
+    <div class="large-6 columns">
+        <form method="post" action="{{ url('index') }}">
+            <fieldset>
+                {{ csrf_input }}
+                {% if form.url.errors %}
+                    {% for error in form.url.errors %}
+                        <div class="callout alert">
+                            <p>{{ error|escape }}</p>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                <label>{{ form.url.label }}
+                    {{ form.url }}
+                </label>
+                <input type="submit" class="button" value="Short it!">
+            </fieldset>
+        </form>
+    </div>
+</div>
+
+
+<script src="{{ static("js/vendor/jquery.js") }}"></script>
+<script src="{{ static("js/vendor/what-input.js") }}"></script>
+<script src="{{ static("js/vendor/foundation.js") }}"></script>
+<script src="{{ static("js/app.js") }}"></script>
+</body>
+</html>
