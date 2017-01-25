@@ -14,7 +14,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import include, url
+from shortener import views
+
+handler404 = 'views.my_404_view'
 
 urlpatterns = [
-    url(r'', include('shortener.urls')),
+    url(r'^', include('shortener.urls')),
+    url(r'^', views.show_404, name='show_404'),
 ]
