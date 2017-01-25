@@ -4,23 +4,34 @@ from django.http import HttpResponseRedirect, HttpResponseNotFound
 from .models import Url
 from django.contrib import auth
 from django.db.models import F
+from django.core.validators import urlsplit, urlunsplit
+from django.urls import reverse
+from django.db import IntegrityError
 
 
 def index(request):
-    """Main page with form. Process data from form, check if in DB and add if not. Simple redirect to info page."""
+    """Main page with form. Take url from form, normalize, add to db and handle all errors."""
     if request.method == 'POST':
         form = UrlForm(request.POST)
         if form.is_valid():
             url_from_form = form.cleaned_data['url']
-            if Url.objects.filter(url=url_from_form).exists():
-                url = Url.objects.get(url=url_from_form)
-            else:
-                user = auth.get_user_model().objects.order_by('?').first()
-                if user is None:
+            # take domain part, lower it and then merge it back, functions from django, so should be safe.
+            scheme, netloc, path, query, fragment = urlsplit(url_from_form)
+            standardized_url = urlunsplit((scheme, netloc.lower(), path, query, fragment))
+            try:
+                Url(url=standardized_url,
+                    user=auth.get_user_model().objects.order_by('?').first()
+                    ).save()
+            except IntegrityError as e:
+                try:
+                    repr(e).index("NOT NULL constraint failed")
+                except ValueError:
+                    # url already in DB, don't worry.
+                    pass
+                else:
                     return HttpResponseNotFound('<h1>There are no users.</h1>')
-                url = Url(url=url_from_form, user=user)
-                url.save()
-            return HttpResponseRedirect('/!{}'.format(url.shortcut))
+            url = Url.objects.get(url=standardized_url)
+            return HttpResponseRedirect(reverse('info_page', args=[url.shortcut]))
         else:
             return render(request, 'shortener/main_form.html', {'form': form})
     else:
