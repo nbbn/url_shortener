@@ -1,4 +1,4 @@
-django ~=1.10
-jinja2 ~=2.9
-requests ~=2.13
-pytz ~=2016
+django~=1.10
+jinja2~=2.9
+requests~=2.13
+pytz~=2016.10

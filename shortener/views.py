@@ -45,7 +45,7 @@ def redirect_link(request, url_shortcut):
     try:
         url = Url.objects.get(shortcut=url_shortcut)
     except Url.DoesNotExist:
-        return HttpResponseNotFound('<h1>Shortcut doesn\'t exist.</h1>')
+        return HttpResponseNotFound('<h1>Shortcut not found.</h1>')
     return HttpResponseRedirect(url.url)
 
 
@@ -54,5 +54,10 @@ def info_page(request, url_shortcut):
     try:
         url = Url.objects.get(shortcut=url_shortcut)
     except Url.DoesNotExist:
-        return HttpResponseNotFound('<h1>Page not found</h1>')
+        return HttpResponseNotFound('<h1>Info page not found.</h1>')
     return render(request, 'shortener/info.html', {'url': url})
+
+
+def show_404(request):
+    """Show 404 page."""
+    return HttpResponseNotFound('<h1>Page not found.</h1>')
