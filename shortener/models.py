@@ -12,7 +12,7 @@ class User(AbstractUser):
 def gen_shortcut():
     unique = False
     if settings.SHORT_URL_LENGTH_BOUNDS[1] < settings.SHORT_URL_LENGTH_BOUNDS[0]:
-        exit('you bastard!')
+        raise SystemExit('SHORT_URL_LENGTH_BOUNDS is incorrect!')
     while unique is not True:
         length = random.randint(settings.SHORT_URL_LENGTH_BOUNDS[0], settings.SHORT_URL_LENGTH_BOUNDS[1])
         number_of_az = length // 2 + 1
@@ -23,7 +23,7 @@ def gen_shortcut():
         rand += ''.join(random.choice(string.digits) for _ in range(number_of_nums))
         try:
             Url.objects.get(shortcut=rand)
-        except:
+        except Url.DoesNotExist:
             unique = True
     return rand
 
